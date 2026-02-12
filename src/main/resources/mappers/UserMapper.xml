@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dev.gmpark.bankbackend.mappers.UserMapper">
+
+    <insert id="insertUser"
+            useGeneratedKeys="true"
+            keyColumn="id"
+            keyProperty="id">
+        INSERT INTO `bank`.`user` (user_type,name, email, password, resident_number)
+        VALUES (
+                IFNULL(#{user.userType} , 'customer'),
+                #{user.name},
+                #{user.email},
+                #{user.password},
+                #{user.residentNumber})
+    </insert>
+    <select id="selectUserByEmailPasswordAndResidentNumber" resultType="dev.gmpark.bankbackend.entities.UserEntity">
+        SELECT `email` AS `email` ,
+               `password` AS `password`,
+               `resident_number` AS `residentNumber`,
+               `name` AS `name`,
+               `user_type` AS `userType`
+        FROM `bank`.`user`
+        WHERE email = #{email}
+          AND password = #{password}
+          AND resident_number = #{residentNumber}
+        LIMIT 1
+    </select>
+    <select id="selectUserByEmailAndPassword" resultType="dev.gmpark.bankbackend.entities.UserEntity">
+        SELECT `email` AS `email` ,
+               `password` AS `password`,
+               `resident_number` AS `residentNumber`,
+               `name` AS `name`,
+               `user_type` AS `userType`
+        FROM `bank`.`user`
+        WHERE email = #{email}
+          AND password = #{password}
+        LIMIT 1
+    </select>
+</mapper>
