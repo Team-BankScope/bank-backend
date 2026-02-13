@@ -1,5 +1,6 @@
 package dev.gmpark.bankbackend.controllers;
 
+import dev.gmpark.bankbackend.entities.MemberEntity;
 import dev.gmpark.bankbackend.entities.UserEntity;
 import dev.gmpark.bankbackend.results.CommonResult;
 import dev.gmpark.bankbackend.services.UserService;
@@ -16,6 +17,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -35,6 +37,32 @@ public class UserController {
         Map<String, Object> response = new HashMap<>();
         response.put("result", result.name());
         return response;
+    }
+    @Operation(summary = "멤버 등록", description = "멤버 정보를 받아 등록합니다.")
+    @RequestMapping(value = "/member", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Map<String, Object> postMemberRegister(@RequestBody MemberEntity member) {
+        CommonResult result = this.userService.registerMember(member);
+        Map<String, Object> response = new HashMap<>();
+        response.put("result", result.name());
+        return response;
+    }
+
+    @Operation(summary = "멤버 수정", description = "멤버 정보를 받아 수정합니다.")
+    @RequestMapping(value = "/member", method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Map<String, Object> patchMember(@RequestBody MemberEntity member) {
+        CommonResult result = this.userService.modifyMember(member);
+        Map<String, Object> response = new HashMap<>();
+        response.put("result", result.name());
+        return response;
+    }
+
+    @Operation(summary = "멤버 목록 조회", description = "모든 멤버 정보를 조회합니다.")
+    @RequestMapping(value = "/members", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public List<MemberEntity> getMembers() {
+        return this.userService.getMembers();
     }
 
     @Operation(summary = "로그인", description = "이메일, 비밀번호, 주민번호를 받아 로그인합니다.")
@@ -66,6 +94,7 @@ public class UserController {
         }
         return response;
     }
+
 
     @Operation(summary = "세션 확인", description = "현재 로그인된 사용자의 정보를 반환합니다.")
     @RequestMapping(value = "/session", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

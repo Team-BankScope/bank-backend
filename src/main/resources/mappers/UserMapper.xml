@@ -16,6 +16,49 @@
                 #{user.password},
                 #{user.residentNumber})
     </insert>
+    <insert id="insertMember"
+            useGeneratedKeys="true"
+            keyColumn="id"
+            keyProperty="id">
+        INSERT INTO `bank`.`member` (name, email, password,level,auth,team,status,join_date,last_login,created_at)
+        VALUES (#{member.name},
+                #{member.email},
+                #{member.password},
+                #{member.level},
+                #{member.auth},
+                #{member.team},
+                IFNULL(#{member.status}, 0),
+                IFNULL(#{member.joinDate}, NOW()),
+                IFNULL(#{member.lastLogin}, NOW()),
+                IFNULL(#{member.createdAt}, NOW())
+               )
+    </insert>
+    <update id="updateMember">
+        UPDATE `bank`.`member`
+        SET name = #{member.name},
+            level = #{member.level},
+            auth = #{member.auth},
+            team = #{member.team},
+            status = #{member.status}
+            <if test="member.password != null and member.password != ''">
+                , password = #{member.password}
+            </if>
+        WHERE email = #{member.email}
+    </update>
+    <select id="selectMembers" resultType="dev.gmpark.bankbackend.entities.MemberEntity">
+        SELECT id,
+               email,
+               password,
+               name,
+               level,
+               auth,
+               team,
+               status,
+               join_date AS joinDate,
+               last_login AS lastLogin,
+               created_at AS createdAt
+        FROM `bank`.`member`
+    </select>
     <select id="selectUserByEmailPasswordAndResidentNumber" resultType="dev.gmpark.bankbackend.entities.UserEntity">
         SELECT `email` AS `email` ,
                `password` AS `password`,
