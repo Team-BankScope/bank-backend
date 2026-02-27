@@ -29,7 +29,7 @@ public class UserService {
 
     public CommonResult registerMember(MemberEntity member) {
         if (member.getName() == null || member.getEmail() == null || member.getPassword() == null||
-            member.getLevel() == null || member.getAuth() == null || member.getTeam() == null) {
+            member.getLevel() == null || member.getAuth() == null || member.getTeam() == null ) {
             return CommonResult.FAILURE;
         }
         int result = this.userMapper.insertMember(member);
@@ -59,8 +59,15 @@ public class UserService {
     public UserEntity login(String email, String password, String residentNumber) {
         return this.userMapper.selectUserByEmailPasswordAndResidentNumber(email, password, residentNumber);
     }
+    public UserEntity loginKiosk(String residentNumber ) {
+        return this.userMapper.selectUserByResidentNumber(residentNumber);
+    }
 
     public UserEntity loginAdmin(String email, String password) {
         return this.userMapper.selectUserByEmailAndPassword(email, password);
+    }
+
+    public MemberEntity loginMember(String email, String password) {
+        return this.userMapper.selectMemberByEmailAndPassword(email, password);
     }
 }

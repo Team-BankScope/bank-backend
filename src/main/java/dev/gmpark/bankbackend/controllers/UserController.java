@@ -80,6 +80,35 @@ public class UserController {
         return response;
     }
 
+    @Operation(summary = "키오스크 로그인", description = "주민번호를 받아 로그인합니다.")
+    @RequestMapping(value = "/kiosk/login", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Map<String, Object> postKioskLogin(@Param(value = "residentNumber") String residentNumber, HttpSession session) {
+        UserEntity user = this.userService.loginKiosk(residentNumber);
+        Map<String, Object> response = new HashMap<>();
+        if (user != null) {
+            response.put("result", CommonResult.SUCCESS.name());
+            session.setAttribute("user", user);
+        } else {
+            response.put("result", CommonResult.FAILURE.name());
+        }
+        return response;
+    }
+    @Operation(summary = "멤버 로그인", description = "이메일, 비밀번호를 받아 멤버 로그인을 합니다.")
+    @RequestMapping(value = "/member/login", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Map<String, Object> postMemberLogin(@Param(value = "email") String email, @Param(value = "password") String password, HttpSession session) {
+        MemberEntity member = this.userService.loginMember(email, password);
+        Map<String, Object> response = new HashMap<>();
+        if (member != null) {
+            response.put("result", CommonResult.SUCCESS.name());
+            session.setAttribute("member", member);
+        } else  {
+            response.put("result", CommonResult.FAILURE.name());
+        }
+        return response;
+    }
+
     @Operation(summary = "관리자 로그인", description = "이메일, 비밀번호를 받아 관리자 로그인을 합니다.")
     @RequestMapping(value = "/login-admin", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
@@ -103,11 +132,23 @@ public class UserController {
         Map<String, Object> response = new HashMap<>();
 
         UserEntity user = (UserEntity) session.getAttribute("user");
+        MemberEntity member = (MemberEntity) session.getAttribute("member");
+        
         if (user != null) {
             response.put("result", "SUCCESS");
+            response.put("type", "user");
             response.put("email", user.getEmail());
             response.put("name", user.getName());
+            response.put("userType", user.getUserType());
             response.put("residentNumber", user.getResidentNumber());
+        } else if (member != null) {
+            response.put("result", "SUCCESS");
+            response.put("type", "member");
+            response.put("email", member.getEmail());
+            response.put("name", member.getName());
+            response.put("level", member.getLevel());
+            response.put("auth", member.getAuth());
+            response.put("team", member.getTeam());
         } else {
             response.put("result", "FAILURE");
         }

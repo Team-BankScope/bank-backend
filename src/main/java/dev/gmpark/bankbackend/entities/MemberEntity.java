@@ -19,6 +19,7 @@ public class MemberEntity {
     private String auth;
     private String team;
     private Integer status;
+    private int counterNumber;
     private LocalDate joinDate;
     private LocalDateTime lastLogin;
     private LocalDateTime createdAt;

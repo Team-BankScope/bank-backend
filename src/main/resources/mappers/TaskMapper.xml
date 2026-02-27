@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dev.gmpark.bankbackend.mappers.TaskMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyColumn="task_id" keyProperty="taskId" >
+        INSERT INTO `bank`.`task`( user_email, ticket_number, task_type, task_detail_type, assigned_level, expected_waiting_time, status, member_id, ranking, created_at, updated_at)
+        VALUES (
+                #{task.userEmail},
+                #{task.ticketNumber},
+                #{task.taskType},
+                #{task.taskDetailType},
+                #{task.assignedLevel},
+                #{task.expectedWaitingTime},
+                #{task.status},
+                #{task.memberId},
+                #{task.ranking},
+                IFNULL(#{task.createdAt}, NOW()),
+                IFNULL(#{task.updatedAt}, NOW())
+               )
+    </insert>
+    <update id="updateTaskStatus">
+        UPDATE `bank`.`task`
+        SET status = #{status}
+        WHERE task_id = #{taskId}
+    </update>
+
+    <select id="selectLastTicketNumber" resultType="string">
+        SELECT ticket_number FROM `bank`.`task`
+        WHERE ticket_number LIKE CONCAT(#{prefix}, '%')
+        AND DATE(created_at) = CURDATE()
+        ORDER BY ticket_number DESC LIMIT 1
+    </select>
+
+    <select id="countWaitingTasks" resultType="int">
+        SELECT COUNT(*) FROM `bank`.`task`
+        WHERE task_type = #{taskType} AND status = 'WAITING'
+    </select>
+
+    <select id="selectAvailableMemberId" resultType="integer">
+        SELECT id FROM `bank`.`member`
+        WHERE level >= #{minLevel}
+        AND status = 1 -- 근무 중인 직원
+        ORDER BY RAND() LIMIT 1 -- 랜덤 배정 (또는 대기 인원 적은 순 등 로직 변경 가능)
+    </select>
+
+    <select id="selectTasksByEmail" resultType="dev.gmpark.bankbackend.vos.TaskVo">
+        SELECT `t1`.`task_id` AS `taskId`,
+               `t1`.`user_email` AS `userEmail`,
+               `t1`.`ticket_number` AS `ticketNumber`,
+               `t1`.`task_type` AS `taskType`,
+               `t1`.`task_detail_type` AS `taskDetailType`,
+               `t1`.`assigned_level` AS `assignedLevel`,
+               `t1`.`expected_waiting_time` AS `expectedWaitingTime`,
+               `t1`.`status` AS `status`,
+               `t1`.`member_id` AS `memberId`,
+               `t1`.`ranking` AS `ranking`,
+               `t1`.`created_at` AS `createdAt`,
+               `t1`.`updated_at` AS `updatedAt`,
+                `t2`.`name` AS `name`,
+                `t2`.`level` AS `level`
+            FROM `bank`.`task` AS `t1`
+            LEFT JOIN `bank`.`member` AS `t2` ON `t1`.`member_id` = `t2`.`id`
+            WHERE `t1`.`user_email` = #{userEmail}
+            ORDER BY `createdAt` DESC
+    </select>
+
+    <select id="selectLatestTaskByUserEmail" resultType="dev.gmpark.bankbackend.vos.TaskVo">
+        SELECT `t1`.`task_id` AS `taskId`,
+               `t1`.`user_email` AS `userEmail`,
+               `t1`.`ticket_number` AS `ticketNumber`,
+               `t1`.`task_type` AS `taskType`,
+               `t1`.`task_detail_type` AS `taskDetailType`,
+               `t1`.`assigned_level` AS `assignedLevel`,
+               `t1`.`expected_waiting_time` AS `expectedWaitingTime`,
+               `t1`.`status` AS `status`,
+               `t1`.`member_id` AS `memberId`,
+               `t1`.`ranking` AS `ranking`,
+               `t1`.`created_at` AS `createdAt`,
+               `t1`.`updated_at` AS `updatedAt`,
+                `t2`.`name` AS `name`,
+                `t2`.`level` AS `level`
+            FROM `bank`.`task` AS `t1`
+            LEFT JOIN `bank`.`member` AS `t2` ON `t1`.`member_id` = `t2`.`id`
+            WHERE `t1`.`user_email` = #{userEmail}
+            ORDER BY `createdAt` DESC
+            LIMIT 1
+    </select>
+
+    <select id="selectAverageTime" resultType="java.lang.String">
+        SELECT IFNULL(AVG(expected_waiting_time), 0)
+        FROM `bank`.`task`
+        WHERE status = 'WAITING'
+    </select>
+
+    <select id="countAvailableMembers" resultType="int">
+        SELECT COUNT(*) FROM `bank`.`member`
+        WHERE status = 1
+    </select>
+    <select id="countAllWaitingPerson" resultType="java.lang.Integer">
+        SELECT COUNT(DISTINCT user_email)
+        FROM bank.task
+        WHERE status = 'WAITING';
+    </select>
+    <select id="selectTasksByMemberId" resultType="dev.gmpark.bankbackend.vos.TaskVo">
+        SELECT `t1`.`task_id` AS `taskId`,
+               `t1`.`user_email` AS `userEmail`,
+               `t1`.`ticket_number` AS `ticketNumber`,
+               `t1`.`task_type` AS `taskType`,
+               `t1`.`task_detail_type` AS `taskDetailType`,
+               `t1`.`assigned_level` AS `assignedLevel`,
+               `t1`.`expected_waiting_time` AS `expectedWaitingTime`,
+               `t1`.`status` AS `status`,
+               `t1`.`member_id` AS `memberId`,
+               `t1`.`ranking` AS `ranking`,
+               `t1`.`created_at` AS `createdAt`,
+               `t1`.`updated_at` AS `updatedAt`,
+               `t2`.`name` AS `name`,
+               `t2`.`level` AS `level`,
+                `t3`.`name` AS `userName`,
+                `t3`.`grade` AS `grade`
+        FROM `bank`.`task` AS `t1`
+                 LEFT JOIN `bank`.`member` AS `t2` ON `t1`.`member_id` = `t2`.`id`
+                 LEFT JOIN `bank`.`user` AS `t3` ON `t1`.`user_email` = `t3`.`email`
+        WHERE `t1`.`member_id` = #{memberId}
+        ORDER BY `createdAt` DESC
+    </select>
+</mapper>

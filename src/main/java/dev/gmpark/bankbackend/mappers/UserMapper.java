@@ -17,4 +17,6 @@ public interface UserMapper {
     List<MemberEntity> selectMembers();
     UserEntity selectUserByEmailPasswordAndResidentNumber(@Param(value = "email") String email, @Param(value = "password") String password, @Param(value = "residentNumber") String residentNumber);
     UserEntity selectUserByEmailAndPassword(@Param(value = "email") String email, @Param(value = "password") String password);
+    UserEntity selectUserByResidentNumber(@Param(value = "residentNumber") String residentNumber);
+    MemberEntity selectMemberByEmailAndPassword(@Param(value = "email") String email, @Param(value = "password") String password);
 }

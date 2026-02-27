@@ -20,13 +20,14 @@
             useGeneratedKeys="true"
             keyColumn="id"
             keyProperty="id">
-        INSERT INTO `bank`.`member` (name, email, password,level,auth,team,status,join_date,last_login,created_at)
+        INSERT INTO `bank`.`member` (name, email, password,level,auth,team,counter_number,status,join_date,last_login,created_at)
         VALUES (#{member.name},
                 #{member.email},
                 #{member.password},
                 #{member.level},
                 #{member.auth},
                 #{member.team},
+                #{member.counterNumber},
                 IFNULL(#{member.status}, 0),
                 IFNULL(#{member.joinDate}, NOW()),
                 IFNULL(#{member.lastLogin}, NOW()),
@@ -39,6 +40,7 @@
             level = #{member.level},
             auth = #{member.auth},
             team = #{member.team},
+            counter_number = #{member.counterNumber},
             status = #{member.status}
             <if test="member.password != null and member.password != ''">
                 , password = #{member.password}
@@ -54,6 +56,7 @@
                auth,
                team,
                status,
+               counter_number AS counterNumber,
                join_date AS joinDate,
                last_login AS lastLogin,
                created_at AS createdAt
@@ -64,7 +67,8 @@
                `password` AS `password`,
                `resident_number` AS `residentNumber`,
                `name` AS `name`,
-               `user_type` AS `userType`
+               `user_type` AS `userType`,
+               `grade` AS `grade`
         FROM `bank`.`user`
         WHERE email = #{email}
           AND password = #{password}
@@ -76,8 +80,38 @@
                `password` AS `password`,
                `resident_number` AS `residentNumber`,
                `name` AS `name`,
-               `user_type` AS `userType`
+               `user_type` AS `userType`,
+               `grade` AS `grade`
         FROM `bank`.`user`
+        WHERE email = #{email}
+          AND password = #{password}
+        LIMIT 1
+    </select>
+    <select id="selectUserByResidentNumber" resultType="dev.gmpark.bankbackend.entities.UserEntity">
+        SELECT `email` AS `email` ,
+               `password` AS `password`,
+               `resident_number` AS `residentNumber`,
+               `name` AS `name`,
+               `user_type` AS `userType`,
+               `grade` AS `grade`
+        FROM `bank`.`user`
+        WHERE resident_number = #{residentNumber}
+        LIMIT 1
+    </select>
+    <select id="selectMemberByEmailAndPassword" resultType="dev.gmpark.bankbackend.entities.MemberEntity">
+        SELECT id,
+               email,
+               password,
+               name,
+               level,
+               auth,
+               team,
+               status,
+               counter_number AS counterNumber,
+               join_date AS joinDate,
+               last_login AS lastLogin,
+               created_at AS createdAt
+        FROM `bank`.`member`
         WHERE email = #{email}
           AND password = #{password}
         LIMIT 1
