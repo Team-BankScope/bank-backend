@@ -13,7 +13,7 @@ import lombok.experimental.SuperBuilder;
 public class TaskVo {
 
     private Long taskId;
-    private String userEmail;
+    private Integer userId;
     private String ticketNumber;
     private String taskType;
     private String taskDetailType;

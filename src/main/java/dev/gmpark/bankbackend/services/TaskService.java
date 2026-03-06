@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,7 +22,7 @@ public class TaskService {
 
     // TODO: ai 설정 및 스케줄링 알고리즘 추가예정
     @Transactional
-    public TaskResult createTask(TaskRequestDto requestDto, String userEmail) {
+    public TaskResult createTask(TaskRequestDto requestDto, Integer userId) {
         String taskType = requestDto.getTaskType();
         String prefix;
         String assignedLevel;
@@ -57,17 +58,49 @@ public class TaskService {
 
         // 3. 대기 인원 및 예상 대기 시간 계산
         int waitingCount = taskMapper.countWaitingTasks(taskType);
-        int expectedWaitingTime = waitingCount * processingTime;
+        if ( waitingCount == 0) {
+            waitingCount = 1;
+        }
+        int availableMemberCount = taskMapper.countAvailableMembersByLevel(minLevel);
+        if (availableMemberCount == 0) availableMemberCount = 1; // 0으로 나누기 방지
 
-        // 4. 직원 배정
-        Integer memberId = taskMapper.selectAvailableMemberId(minLevel);
+        int expectedWaitingTime = (waitingCount * processingTime) / availableMemberCount;
+
+        // 4. 직원 배정 및 기존 업무 통합 로직
+        Integer memberId;
+        List<TaskEntity> waitingTasks = taskMapper.selectWaitingTasksByUserId(userId);
+
+        if (!waitingTasks.isEmpty()) {
+            // 기존 대기 업무가 있는 경우
+            int maxMinLevel = minLevel;
+            List<Long> taskIdsToUpdate = new ArrayList<>();
+
+            for (TaskEntity task : waitingTasks) {
+                taskIdsToUpdate.add(task.getTaskId());
+                int taskMinLevel = getMinLevelByAssignedLevel(task.getAssignedLevel());
+                if (taskMinLevel > maxMinLevel) {
+                    maxMinLevel = taskMinLevel;
+                }
+            }
+
+            // 가장 높은 레벨을 처리할 수 있는 직원 배정
+            memberId = taskMapper.selectAvailableMemberId(maxMinLevel);
+
+            // 기존 업무들의 담당 직원 업데이트
+            if (memberId != null && !taskIdsToUpdate.isEmpty()) {
+                taskMapper.updateMemberIdForTasks(taskIdsToUpdate, memberId);
+            }
+        } else {
+            // 기존 대기 업무가 없는 경우
+            memberId = taskMapper.selectAvailableMemberId(minLevel);
+        }
         
         // 5. 순번 (ranking)
         int ranking = waitingCount + 1;
 
         // 6. 엔티티 생성 및 저장
         TaskEntity task = TaskEntity.builder()
-                .userEmail(userEmail)
+                .userId(userId)
                 .ticketNumber(ticketNumber)
                 .taskType(taskType)
                 .taskDetailType(requestDto.getTaskDetailType())
@@ -83,12 +116,20 @@ public class TaskService {
         int result = taskMapper.insert(task);
         return result > 0 ? TaskResult.SUCCESS : TaskResult.FAILURE;
     }
-    public List<TaskVo> getTask(String userEmail ) {
-        return taskMapper.selectTasksByEmail(userEmail);
+
+    private int getMinLevelByAssignedLevel(String assignedLevel) {
+        if ("LEVEL_1".equals(assignedLevel)) return 1;
+        if ("LEVEL_2".equals(assignedLevel)) return 3;
+        if ("LEVEL_3".equals(assignedLevel)) return 5;
+        return 1; // 기본값
+    }
+
+    public List<TaskVo> getTask(Integer userId) {
+        return taskMapper.selectTasksByUserId(userId);
     }
     
-    public TaskVo getLatestTask(String userEmail) {
-        return taskMapper.selectLatestTaskByUserEmail(userEmail);
+    public TaskVo getLatestTask(Integer userId) {
+        return taskMapper.selectLatestTaskByUserId(userId);
     }
 
     public String getAverageTime() {

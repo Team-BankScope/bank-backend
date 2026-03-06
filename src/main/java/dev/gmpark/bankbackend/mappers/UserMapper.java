@@ -13,7 +13,9 @@ public interface UserMapper {
 
     int insertUser (@Param(value = "user") UserEntity user);
     int insertMember(@Param(value = "member") MemberEntity member);
+    int deleteMember( @Param(value = "id") Long id);
     int updateMember(@Param(value = "member") MemberEntity member);
+    int insertUnregisteredUser(@Param(value = "user") UserEntity user);
     List<MemberEntity> selectMembers();
     UserEntity selectUserByEmailPasswordAndResidentNumber(@Param(value = "email") String email, @Param(value = "password") String password, @Param(value = "residentNumber") String residentNumber);
     UserEntity selectUserByEmailAndPassword(@Param(value = "email") String email, @Param(value = "password") String password);

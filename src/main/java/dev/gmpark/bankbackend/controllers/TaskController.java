@@ -36,7 +36,7 @@ public class TaskController {
             return response;
         }
 
-        TaskResult result = taskService.createTask(requestDto, user.getEmail());
+        TaskResult result = taskService.createTask(requestDto, user.getId());
         response.put("result", result.name());
         return response;
     }
@@ -50,7 +50,7 @@ public class TaskController {
             response.put("result", CommonResult.FAILURE.name());
             return response;
         }
-        TaskVo task = taskService.getLatestTask(user.getEmail());
+        TaskVo task = taskService.getLatestTask(user.getId());
         if (task != null) {
             response.put("result", CommonResult.SUCCESS.name());
             response.put("task", task);
@@ -65,17 +65,17 @@ public class TaskController {
     public String getAverageTime() {
         return taskService.getAverageTime();
     }
+    @Operation(summary = "현재 대기 고객", description = "모든 대기 상태의 고객수를 반환합니다. ")
+    @RequestMapping(value = "/waiting-count", method = RequestMethod.GET, produces = MediaType.TEXT_HTML_VALUE)
+    @ResponseBody
+    public String getWaitingCount() {
+        return String.valueOf(taskService.getTotalWaitingPerson());
+    }
     @Operation(summary = "현재 운영중인 창구", description = "현재 로그인중인 멤버의 수를 반환합니다.")
     @RequestMapping(value = "/available-count", method = RequestMethod.GET, produces = MediaType.TEXT_HTML_VALUE)
     @ResponseBody
     public String getAvailableCounter() {
         return String.valueOf(taskService.getAvailableMemberCount());
-    }
-    @Operation(summary = "현재 대기 고객", description = "모든 대기 상태의 고객수를 반환합니다. ")
-    @RequestMapping(value = "/waiting-person", method = RequestMethod.GET, produces = MediaType.TEXT_HTML_VALUE)
-    @ResponseBody
-    public String getWaitingPerson() {
-        return String.valueOf(taskService.getTotalWaitingPerson());
     }
 
 }

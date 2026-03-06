@@ -34,6 +34,17 @@
                 IFNULL(#{member.createdAt}, NOW())
                )
     </insert>
+    <insert id="insertUnregisteredUser">
+        INSERT INTO `bank`.`user` (user_type,name, email, password, resident_number)
+        VALUES (
+                   IFNULL(#{user.userType} , 'unregisterCustomer'),
+                   #{user.name},
+                   #{user.email},
+                   #{user.password},
+                   #{user.residentNumber}
+               )
+
+    </insert>
     <update id="updateMember">
         UPDATE `bank`.`member`
         SET name = #{member.name},
@@ -47,6 +58,10 @@
             </if>
         WHERE email = #{member.email}
     </update>
+    <delete id="deleteMember">
+        DELETE FROM `bank`.`member`
+        WHERE id = #{id}
+    </delete>
     <select id="selectMembers" resultType="dev.gmpark.bankbackend.entities.MemberEntity">
         SELECT id,
                email,
@@ -63,7 +78,8 @@
         FROM `bank`.`member`
     </select>
     <select id="selectUserByEmailPasswordAndResidentNumber" resultType="dev.gmpark.bankbackend.entities.UserEntity">
-        SELECT `email` AS `email` ,
+        SELECT `id`  AS `id`,
+               `email` AS `email` ,
                `password` AS `password`,
                `resident_number` AS `residentNumber`,
                `name` AS `name`,
@@ -88,12 +104,13 @@
         LIMIT 1
     </select>
     <select id="selectUserByResidentNumber" resultType="dev.gmpark.bankbackend.entities.UserEntity">
-        SELECT `email` AS `email` ,
-               `password` AS `password`,
+        SELECT `id`              AS `id`,
+               `email`           AS `email`,
+               `password`        AS `password`,
                `resident_number` AS `residentNumber`,
-               `name` AS `name`,
-               `user_type` AS `userType`,
-               `grade` AS `grade`
+               `name`            AS `name`,
+               `user_type`       AS `userType`,
+               `grade`           AS `grade`
         FROM `bank`.`user`
         WHERE resident_number = #{residentNumber}
         LIMIT 1

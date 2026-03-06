@@ -10,8 +10,9 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode(of = "email")
+@EqualsAndHashCode(of = "id")
 public class UserEntity implements Serializable {
+    private int id;
     private String name;
     private String email;
     private String residentNumber;

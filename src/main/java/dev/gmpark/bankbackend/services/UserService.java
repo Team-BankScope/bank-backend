@@ -26,6 +26,18 @@ public class UserService {
             return CommonResult.FAILURE;
         }
     }
+    public CommonResult seminRegister( UserEntity user) {
+        if( user.getResidentNumber() == null || user.getName() == null) {
+            return CommonResult.FAILURE;
+        }
+        int result = this.userMapper.insertUnregisteredUser(user);
+        if(result > 0) {
+            return CommonResult.SUCCESS;
+        }
+        else {
+            return CommonResult.FAILURE;
+        }
+    }
 
     public CommonResult registerMember(MemberEntity member) {
         if (member.getName() == null || member.getEmail() == null || member.getPassword() == null||
@@ -35,6 +47,15 @@ public class UserService {
         int result = this.userMapper.insertMember(member);
         if (result > 0) {
             return CommonResult.SUCCESS;
+        } else {
+            return CommonResult.FAILURE;
+        }
+    }
+    public CommonResult deleteUser( Long id) {
+        int result = this.userMapper.deleteMember(id);
+        if( result > 0) {
+            return CommonResult.SUCCESS;
+
         } else {
             return CommonResult.FAILURE;
         }

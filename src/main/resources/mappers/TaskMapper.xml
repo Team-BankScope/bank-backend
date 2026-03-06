@@ -5,9 +5,9 @@
 <mapper namespace="dev.gmpark.bankbackend.mappers.TaskMapper">
 
     <insert id="insert" useGeneratedKeys="true" keyColumn="task_id" keyProperty="taskId" >
-        INSERT INTO `bank`.`task`( user_email, ticket_number, task_type, task_detail_type, assigned_level, expected_waiting_time, status, member_id, ranking, created_at, updated_at)
+        INSERT INTO `bank`.`task`( user_id, ticket_number, task_type, task_detail_type, assigned_level, expected_waiting_time, status, member_id, ranking, created_at, updated_at)
         VALUES (
-                #{task.userEmail},
+                #{task.userId},
                 #{task.ticketNumber},
                 #{task.taskType},
                 #{task.taskDetailType},
@@ -22,7 +22,8 @@
     </insert>
     <update id="updateTaskStatus">
         UPDATE `bank`.`task`
-        SET status = #{status}
+        SET status = #{status},
+            updated_at = NOW()
         WHERE task_id = #{taskId}
     </update>
 
@@ -45,9 +46,9 @@
         ORDER BY RAND() LIMIT 1 -- 랜덤 배정 (또는 대기 인원 적은 순 등 로직 변경 가능)
     </select>
 
-    <select id="selectTasksByEmail" resultType="dev.gmpark.bankbackend.vos.TaskVo">
+    <select id="selectTasksByUserId" resultType="dev.gmpark.bankbackend.vos.TaskVo">
         SELECT `t1`.`task_id` AS `taskId`,
-               `t1`.`user_email` AS `userEmail`,
+               `t1`.`user_id` AS `userId`,
                `t1`.`ticket_number` AS `ticketNumber`,
                `t1`.`task_type` AS `taskType`,
                `t1`.`task_detail_type` AS `taskDetailType`,
@@ -62,13 +63,13 @@
                 `t2`.`level` AS `level`
             FROM `bank`.`task` AS `t1`
             LEFT JOIN `bank`.`member` AS `t2` ON `t1`.`member_id` = `t2`.`id`
-            WHERE `t1`.`user_email` = #{userEmail}
+            WHERE `t1`.`user_id` = #{userId}
             ORDER BY `createdAt` DESC
     </select>
 
-    <select id="selectLatestTaskByUserEmail" resultType="dev.gmpark.bankbackend.vos.TaskVo">
+    <select id="selectLatestTaskByUserId" resultType="dev.gmpark.bankbackend.vos.TaskVo">
         SELECT `t1`.`task_id` AS `taskId`,
-               `t1`.`user_email` AS `userEmail`,
+               `t1`.`user_id` AS `userId`,
                `t1`.`ticket_number` AS `ticketNumber`,
                `t1`.`task_type` AS `taskType`,
                `t1`.`task_detail_type` AS `taskDetailType`,
@@ -83,7 +84,7 @@
                 `t2`.`level` AS `level`
             FROM `bank`.`task` AS `t1`
             LEFT JOIN `bank`.`member` AS `t2` ON `t1`.`member_id` = `t2`.`id`
-            WHERE `t1`.`user_email` = #{userEmail}
+            WHERE `t1`.`user_id` = #{userId}
             ORDER BY `createdAt` DESC
             LIMIT 1
     </select>
@@ -99,13 +100,13 @@
         WHERE status = 1
     </select>
     <select id="countAllWaitingPerson" resultType="java.lang.Integer">
-        SELECT COUNT(DISTINCT user_email)
+        SELECT COUNT(DISTINCT user_id)
         FROM bank.task
         WHERE status = 'WAITING';
     </select>
     <select id="selectTasksByMemberId" resultType="dev.gmpark.bankbackend.vos.TaskVo">
         SELECT `t1`.`task_id` AS `taskId`,
-               `t1`.`user_email` AS `userEmail`,
+               `t1`.`user_id` AS `userId`,
                `t1`.`ticket_number` AS `ticketNumber`,
                `t1`.`task_type` AS `taskType`,
                `t1`.`task_detail_type` AS `taskDetailType`,
@@ -122,8 +123,41 @@
                 `t3`.`grade` AS `grade`
         FROM `bank`.`task` AS `t1`
                  LEFT JOIN `bank`.`member` AS `t2` ON `t1`.`member_id` = `t2`.`id`
-                 LEFT JOIN `bank`.`user` AS `t3` ON `t1`.`user_email` = `t3`.`email`
+                 LEFT JOIN `bank`.`user` AS `t3` ON `t1`.`user_id` = `t3`.`id`
         WHERE `t1`.`member_id` = #{memberId}
         ORDER BY `createdAt` DESC
+    </select>
+
+    <select id="selectWaitingTasksByUserId" resultType="dev.gmpark.bankbackend.entities.TaskEntity">
+        SELECT
+            task_id AS taskId,
+            user_id AS userId,
+            ticket_number AS ticketNumber,
+            task_type AS taskType,
+            task_detail_type AS taskDetailType,
+            assigned_level AS assignedLevel,
+            expected_waiting_time AS expectedWaitingTime,
+            status AS status,
+            member_id AS memberId,
+            ranking AS ranking,
+            created_at AS createdAt,
+            updated_at AS updatedAt
+        FROM `bank`.`task`
+        WHERE user_id = #{userId} AND status = 'WAITING'
+    </select>
+
+    <update id="updateMemberIdForTasks">
+        UPDATE `bank`.`task`
+        SET member_id = #{memberId},
+            updated_at = NOW()
+        WHERE task_id IN
+        <foreach item="id" collection="taskIds" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <select id="countAvailableMembersByLevel" resultType="int">
+        SELECT COUNT(*) FROM `bank`.`member`
+        WHERE level >= #{minLevel} AND status = 1
     </select>
 </mapper>

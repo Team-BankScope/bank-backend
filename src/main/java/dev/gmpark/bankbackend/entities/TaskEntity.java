@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Setter
 public class TaskEntity {
     private Long taskId;
-    private String userEmail;
+    private Integer userId;
     private String ticketNumber;
     private String taskType;
     private String taskDetailType;

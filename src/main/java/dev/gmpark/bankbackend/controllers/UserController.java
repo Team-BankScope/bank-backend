@@ -38,6 +38,11 @@ public class UserController {
         response.put("result", result.name());
         return response;
     }
+    @Operation(summary = "비회원(키오스크) 회원가입", description = "주민번호, 이름만 받아 회원을 등록합니다.")
+    @RequestMapping(value = "/semi-register", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Object> postUnregisteredUser(@RequestBody UserEntity user) {
+        return null;
+    }
     @Operation(summary = "멤버 등록", description = "멤버 정보를 받아 등록합니다.")
     @RequestMapping(value = "/member", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
@@ -46,6 +51,12 @@ public class UserController {
         Map<String, Object> response = new HashMap<>();
         response.put("result", result.name());
         return response;
+    }
+    @RequestMapping(value = "/member", method =  RequestMethod.DELETE, produces =  MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Map<String, Object> deleteMember(@Param(value = "id") Long id) {
+        CommonResult result = this.userService.deleteUser(id);
+        return  null;
     }
 
     @Operation(summary = "멤버 수정", description = "멤버 정보를 받아 수정합니다.")
