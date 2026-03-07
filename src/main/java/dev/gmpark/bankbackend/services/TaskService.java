@@ -23,6 +23,10 @@ public class TaskService {
     // TODO: ai 설정 및 스케줄링 알고리즘 추가예정
     @Transactional
     public TaskResult createTask(TaskRequestDto requestDto, Integer userId) {
+        // TODO : DTO랑 userId null검사
+        // TODO: 유저의 id를 통해서 그 유저의 특정 업무를 조회하고 단 하나라도
+        //  IN_PROGRESS상태인 업무가 있을때 FAILURE_TASK_IN_PROGRESS를 return;
+
         String taskType = requestDto.getTaskType();
         String prefix;
         String assignedLevel;
@@ -145,9 +149,11 @@ public class TaskService {
 
     }
     public List<TaskVo> getTasksByMemberId(Integer memberId) {
+        // TODO: memberId가 null값이 경우 예외처리 try-catch
         return taskMapper.selectTasksByMemberId(memberId);
     }
     public TaskResult updateTaskStatus(Long taskId, String status) {
+        // TODO : taskId, status가 null값이 경우 실패반환
         int result = taskMapper.updateTaskStatus(taskId, status);
         return result > 0 ? TaskResult.SUCCESS : TaskResult.FAILURE;
     } 

@@ -89,6 +89,7 @@ public class UserService {
     }
 
     public MemberEntity loginMember(String email, String password) {
+
         return this.userMapper.selectMemberByEmailAndPassword(email, password);
     }
 }
