@@ -24,8 +24,17 @@ public class TaskService {
     @Transactional
     public TaskResult createTask(TaskRequestDto requestDto, Integer userId) {
         // TODO : DTO랑 userId null검사
+        if (requestDto == null || userId == null) {
+            return TaskResult.FAILURE;
+        }
+
         // TODO: 유저의 id를 통해서 그 유저의 특정 업무를 조회하고 단 하나라도
         //  IN_PROGRESS상태인 업무가 있을때 FAILURE_TASK_IN_PROGRESS를 return;
+        List<TaskVo> userTasks = taskMapper.selectTasksByUserId(userId);
+        if (userTasks != null && userTasks.stream()
+                .anyMatch(task -> "IN_PROGRESS".equals(task.getStatus()))) {
+            return TaskResult.FAILURE_TASK_IN_PROGRESS;
+        }
 
         String taskType = requestDto.getTaskType();
         String prefix;
@@ -150,10 +159,22 @@ public class TaskService {
     }
     public List<TaskVo> getTasksByMemberId(Integer memberId) {
         // TODO: memberId가 null값이 경우 예외처리 try-catch
-        return taskMapper.selectTasksByMemberId(memberId);
+        try {
+            if (memberId == null) {
+                throw new IllegalArgumentException("memberId cannot be null");
+            }
+            return taskMapper.selectTasksByMemberId(memberId);
+        } catch (IllegalArgumentException e) {
+            // 로그 기록
+            System.err.println("Invalid memberId: " + e.getMessage());
+            return new ArrayList<>(); // 빈 리스트 반환
+        }
     }
     public TaskResult updateTaskStatus(Long taskId, String status) {
         // TODO : taskId, status가 null값이 경우 실패반환
+        if (taskId == null || status == null) {
+            return TaskResult.FAILURE;
+        }
         int result = taskMapper.updateTaskStatus(taskId, status);
         return result > 0 ? TaskResult.SUCCESS : TaskResult.FAILURE;
     } 
