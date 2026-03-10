@@ -43,6 +43,7 @@ public class UserController {
     public Map<String, Object> postUnregisteredUser(@RequestBody UserEntity user) {
         return null;
     }
+
     @Operation(summary = "멤버 등록", description = "멤버 정보를 받아 등록합니다.")
     @RequestMapping(value = "/member", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody

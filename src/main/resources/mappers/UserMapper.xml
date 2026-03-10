@@ -133,4 +133,15 @@
           AND password = #{password}
         LIMIT 1
     </select>
+    <select id="selectUserById" resultType="dev.gmpark.bankbackend.entities.UserEntity">
+        SELECT `id`              AS `id`,
+               `email`           AS `email`,
+               `password`        AS `password`,
+               `resident_number` AS `residentNumber`,
+               `name`            AS `name`,
+               `user_type`       AS `userType`,
+               `grade`           AS `grade`
+        FROM `bank`.`user`
+        WHERE id = #{id}
+    </select>
 </mapper>
