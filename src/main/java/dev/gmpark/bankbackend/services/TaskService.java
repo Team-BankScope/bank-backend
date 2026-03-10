@@ -23,13 +23,13 @@ public class TaskService {
     // TODO: ai 설정 및 스케줄링 알고리즘 추가예정
     @Transactional
     public TaskResult createTask(TaskRequestDto requestDto, Integer userId) {
-        // TODO : DTO랑 userId null검사
+
         if (requestDto == null || userId == null) {
             return TaskResult.FAILURE;
         }
+        //유저의 id를 통해서 그 유저의 특정 업무를 조회하고 단 하나라도 IN_PROGRESS상태인 업무가
+        // 있을때 FAILURE_TASK_IN_PROGRESS를 return;
 
-        // TODO: 유저의 id를 통해서 그 유저의 특정 업무를 조회하고 단 하나라도
-        //  IN_PROGRESS상태인 업무가 있을때 FAILURE_TASK_IN_PROGRESS를 return;
         List<TaskVo> userTasks = taskMapper.selectTasksByUserId(userId);
         if (userTasks != null && userTasks.stream()
                 .anyMatch(task -> "IN_PROGRESS".equals(task.getStatus()))) {
@@ -158,7 +158,7 @@ public class TaskService {
 
     }
     public List<TaskVo> getTasksByMemberId(Integer memberId) {
-        // TODO: memberId가 null값이 경우 예외처리 try-catch
+        // memberId가 null값이 경우 예외처리 try-catch
         try {
             if (memberId == null) {
                 throw new IllegalArgumentException("memberId cannot be null");
