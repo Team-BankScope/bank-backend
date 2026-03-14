@@ -53,11 +53,14 @@ public class UserController {
         response.put("result", result.name());
         return response;
     }
+    @Operation(summary = "멤버 삭제", description = "멤버를 삭제합니다.")
     @RequestMapping(value = "/member", method =  RequestMethod.DELETE, produces =  MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Map<String, Object> deleteMember(@Param(value = "id") Long id) {
         CommonResult result = this.userService.deleteUser(id);
-        return  null;
+        Map<String, Object> response = new HashMap<>();
+        response.put("result", result.name());
+        return  response;
     }
 
     @Operation(summary = "멤버 수정", description = "멤버 정보를 받아 수정합니다.")

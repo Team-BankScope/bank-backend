@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode(of = "taskId")
 public class TaskEntity {
     private Long taskId;
     private Integer userId;
