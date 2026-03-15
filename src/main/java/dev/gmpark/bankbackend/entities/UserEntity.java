@@ -1,6 +1,7 @@
 package dev.gmpark.bankbackend.entities;
 
 
+import dev.gmpark.bankbackend.enums.Gender;
 import lombok.*;
 
 import java.io.Serializable;
@@ -18,4 +19,7 @@ public class UserEntity implements Serializable {
     private String residentNumber;
     private String password;
     private String userType;
+    private Gender gender;
+    private String age;
+    private String grade;
 }
