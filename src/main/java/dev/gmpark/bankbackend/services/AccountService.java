@@ -34,6 +34,9 @@ public class AccountService {
         if ( user.getUserType() != null && !(user.getUserType().equals("customer")|| user.getUserType().equals("unregisterCustomer"))) {
             return Pair.of(AccountResult.FAILURE, null);
         }
+        if ( accountType == null || accountType.trim().isEmpty() || accountPassword == null || accountPassword.trim().isEmpty() ) {
+            return Pair.of(AccountResult.FAILURE, null);
+        }
 
         AccountEntity account  = new AccountEntity();
         account.setUserId(userId);

@@ -5,5 +5,4 @@ public enum TaskResult implements Result {
     FAILURE,
     FAILURE_TASK_IN_PROGRESS,
     FAILURE_SESSION
-
 }
