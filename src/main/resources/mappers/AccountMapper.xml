@@ -30,6 +30,7 @@
                 #{account.lastTransactionAt}
                )
     </insert>
+
     <select id="selectAccountById" resultType="dev.gmpark.bankbackend.entities.AccountEntity">
         SELECT `account_id` AS `accountId`,
                `user_id` AS `userId`,
@@ -43,11 +44,51 @@
                `created_at` AS `createdAt`,
                `last_transaction_at` AS `lastTransactionAt`
         FROM `bank`.`account`
-        WHERE `user_id` = #{id}
+        WHERE `account_id` = #{id}
+    </select>
+
+    <select id="selectAccountByAccountNumber" resultType="dev.gmpark.bankbackend.entities.AccountEntity">
+        SELECT `account_id` AS `accountId`,
+               `user_id` AS `userId`,
+               `account_number` AS `accountNumber`,
+               `account_type` AS `accountType`,
+               `balance` AS `balance`,
+               `account_password` AS `accountPassword`,
+               `status` AS `status`,
+               `password_fail_count` AS `passwordFailCount`,
+               `account_alias` AS `accountAlias`,
+               `created_at` AS `createdAt`,
+               `last_transaction_at` AS `lastTransactionAt`
+        FROM `bank`.`account`
+        WHERE `account_number` = #{accountNumber}
+    </select>
+
+    <select id="selectAccountsByUserId" resultType="dev.gmpark.bankbackend.entities.AccountEntity">
+        SELECT `account_id` AS `accountId`,
+               `user_id` AS `userId`,
+               `account_number` AS `accountNumber`,
+               `account_type` AS `accountType`,
+               `balance` AS `balance`,
+               `account_password` AS `accountPassword`,
+               `status` AS `status`,
+               `password_fail_count` AS `passwordFailCount`,
+               `account_alias` AS `accountAlias`,
+               `created_at` AS `createdAt`,
+               `last_transaction_at` AS `lastTransactionAt`
+        FROM `bank`.`account`
+        WHERE `user_id` = #{userId}
+        ORDER BY `created_at` DESC
     </select>
 
     <select id="countByAccountNumber" resultType="int">
         SELECT COUNT(*) FROM `bank`.`account`
         WHERE account_number = #{accountNumber}
     </select>
+
+    <update id="updateBalance">
+        UPDATE `bank`.`account`
+        SET balance = #{balance},
+            last_transaction_at = NOW()
+        WHERE account_id = #{accountId}
+    </update>
 </mapper>

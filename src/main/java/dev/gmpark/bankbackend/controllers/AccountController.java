@@ -13,12 +13,14 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -38,11 +40,7 @@ public class AccountController {
                                            @RequestParam(value = "accountAlias") String accountAlias ,
                                            @RequestParam(value = "accountPassword") String accountPassword) {
         Map<String, Object> response = new HashMap<>();
-/*        MemberEntity member = (MemberEntity) session.getAttribute("member");
-        if(member == null) {
-            response.put("result", AccountResult.FAILURE.name());
-            return response;
-        }*/
+
         Pair<AccountResult, AccountEntity> result = this.accountService.createAccount(userId, accountType, accountAlias, accountPassword);
         response.put("result", result.getLeft().name());
         if (result.getLeft() == AccountResult.SUCCESS) {
@@ -50,15 +48,71 @@ public class AccountController {
         }
         return response;
     }
+    
     @Operation(summary = "통장비밀번호 일치조회", description = "손님의 통장비밀번호의 일치여부를 조회합니다.")
     @RequestMapping(value = "/account-password", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Map<String, Object> postAccountPassword(HttpSession session, String accountPassword) {
+    public Map<String, Object> postAccountPassword(HttpSession session, @RequestParam(value = "accountId") Long accountId, @RequestParam(value = "accountPassword") String accountPassword) {
         Map<String, Object> response = new HashMap<>();
         UserEntity user = (UserEntity) session.getAttribute("user");
-        AccountResult result = this.accountService.checkAccountPassword(user.getId(), accountPassword);
-        response.put("result", result);
+        if (user == null) {
+            response.put("result", AccountResult.FAILURE.name());
+            return response;
+        }
+        AccountResult result = this.accountService.checkAccountPassword(accountId, accountPassword);
+        response.put("result", result.name());
         return response;
     }
 
+    @Operation(summary = "내 계좌 목록 및 잔액 조회", description = "로그인한 사용자의 계좌 목록과 잔액을 조회합니다.")
+    @RequestMapping(value = "/list", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Map<String, Object> getMyAccounts(HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        UserEntity user = (UserEntity) session.getAttribute("user");
+        
+        if (user == null) {
+            response.put("result", AccountResult.FAILURE.name());
+            response.put("message", "로그인이 필요합니다.");
+            return response;
+        }
+
+        List<AccountEntity> accounts = this.accountService.getMyAccounts(user.getId());
+        response.put("result", AccountResult.SUCCESS.name());
+        response.put("accounts", accounts);
+        
+        return response;
+    }
+
+    @Operation(summary = "특정 유저의 계좌 목록 조회 (행원용)", description = "유저 ID를 통해 해당 유저의 모든 계좌 목록을 조회합니다.")
+    @RequestMapping(value = "/user/{userId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Map<String, Object> getUserAccounts(@PathVariable("userId") Integer userId) {
+        Map<String, Object> response = new HashMap<>();
+        
+        List<AccountEntity> accounts = this.accountService.getMyAccounts(userId);
+        response.put("result", AccountResult.SUCCESS.name());
+        response.put("accounts", accounts);
+        
+        return response;
+    }
+    
+    @Operation(summary = "특정 계좌 잔고 조회", description = "계좌번호로 특정 계좌의 정보 및 잔고를 조회합니다.")
+    @RequestMapping(value = "/balance", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Map<String, Object> getAccountBalance(@RequestParam(value = "accountNumber") String accountNumber) {
+        Map<String, Object> response = new HashMap<>();
+        
+        AccountEntity account = this.accountService.getAccountByAccountNumber(accountNumber);
+        if (account != null) {
+            response.put("result", AccountResult.SUCCESS.name());
+            response.put("balance", account.getBalance());
+            response.put("accountAlias", account.getAccountAlias());
+        } else {
+            response.put("result", AccountResult.FAILURE.name());
+            response.put("message", "계좌를 찾을 수 없습니다.");
+        }
+        
+        return response;
+    }
 }

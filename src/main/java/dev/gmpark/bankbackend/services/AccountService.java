@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Random;
 
 @Service
@@ -30,7 +31,7 @@ public class AccountService {
             return Pair.of(AccountResult.FAILURE_USER_NOT_EXIST, null);
         }
         // 사용자 유저여부 확인
-        if ( user.getUserType() != null && !user.getUserType().equals("customer")) {
+        if ( user.getUserType() != null && !(user.getUserType().equals("customer")|| user.getUserType().equals("unregisterCustomer"))) {
             return Pair.of(AccountResult.FAILURE, null);
         }
 
@@ -58,9 +59,10 @@ public class AccountService {
         return Pair.of(AccountResult.FAILURE, null);
 
     }
-    public AccountResult checkAccountPassword( Integer id, String accountPassword) {
+    public AccountResult checkAccountPassword( Long id, String accountPassword) {
         AccountEntity account = this.accountMapper.selectAccountById(id);
         if (account == null) {
+            System.out.println("계정을 찾을 수 없음. ID: " + id);
             return AccountResult.FAILURE;
         }
         if (BCrypt.checkpw(accountPassword, account.getAccountPassword())) {
@@ -77,5 +79,13 @@ public class AccountService {
         int part2 = random.nextInt(900) + 100; // 100 ~ 999
         int part3 = random.nextInt(900000) + 100000; // 100000 ~ 999999
         return String.format("%d-%d-%d", part1, part2, part3);
+    }
+    
+    public List<AccountEntity> getMyAccounts(Integer userId) {
+        return this.accountMapper.selectAccountsByUserId(userId);
+    }
+    
+    public AccountEntity getAccountByAccountNumber(String accountNumber) {
+        return this.accountMapper.selectAccountByAccountNumber(accountNumber);
     }
 }

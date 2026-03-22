@@ -8,13 +8,15 @@
             useGeneratedKeys="true"
             keyColumn="id"
             keyProperty="id">
-        INSERT INTO `bank`.`user` (user_type,name, email, password, resident_number)
+        INSERT INTO `bank`.`user` (user_type, name, email, password, resident_number, gender, age)
         VALUES (
                 IFNULL(#{user.userType} , 'customer'),
                 #{user.name},
                 #{user.email},
                 #{user.password},
-                #{user.residentNumber})
+                #{user.residentNumber},
+                #{user.gender},
+                #{user.age})
     </insert>
     <insert id="insertMember"
             useGeneratedKeys="true"
@@ -35,13 +37,15 @@
                )
     </insert>
     <insert id="insertUnregisteredUser">
-        INSERT INTO `bank`.`user` (user_type,name, email, password, resident_number)
+        INSERT INTO `bank`.`user` (user_type, name, email, password, resident_number, gender, age)
         VALUES (
                    IFNULL(#{user.userType} , 'unregisterCustomer'),
                    #{user.name},
                    #{user.email},
                    #{user.password},
-                   #{user.residentNumber}
+                   #{user.residentNumber},
+                   #{user.gender},
+                   #{user.age}
                )
 
     </insert>
@@ -84,11 +88,27 @@
                `resident_number` AS `residentNumber`,
                `name` AS `name`,
                `user_type` AS `userType`,
-               `grade` AS `grade`
+               `grade` AS `grade`,
+               `gender` AS `gender`,
+               `age` AS `age`
         FROM `bank`.`user`
         WHERE email = #{email}
           AND password = #{password}
           AND resident_number = #{residentNumber}
+        LIMIT 1
+    </select>
+    <select id="selectUserByEmail" resultType="dev.gmpark.bankbackend.entities.UserEntity">
+        SELECT `id`  AS `id`,
+               `email` AS `email` ,
+               `password` AS `password`,
+               `resident_number` AS `residentNumber`,
+               `name` AS `name`,
+               `user_type` AS `userType`,
+               `grade` AS `grade`,
+               `gender` AS `gender`,
+               `age` AS `age`
+        FROM `bank`.`user`
+        WHERE email = #{email}
         LIMIT 1
     </select>
     <select id="selectUserByEmailAndPassword" resultType="dev.gmpark.bankbackend.entities.UserEntity">
@@ -97,7 +117,9 @@
                `resident_number` AS `residentNumber`,
                `name` AS `name`,
                `user_type` AS `userType`,
-               `grade` AS `grade`
+               `grade` AS `grade`,
+               `gender` AS `gender`,
+               `age` AS `age`
         FROM `bank`.`user`
         WHERE email = #{email}
           AND password = #{password}
@@ -110,7 +132,9 @@
                `resident_number` AS `residentNumber`,
                `name`            AS `name`,
                `user_type`       AS `userType`,
-               `grade`           AS `grade`
+               `grade`           AS `grade`,
+               `gender`          AS `gender`,
+               `age`             AS `age`
         FROM `bank`.`user`
         WHERE resident_number = #{residentNumber}
         LIMIT 1
@@ -140,7 +164,9 @@
                `resident_number` AS `residentNumber`,
                `name`            AS `name`,
                `user_type`       AS `userType`,
-               `grade`           AS `grade`
+               `grade`           AS `grade`,
+               `gender`          AS `gender`,
+               `age`             AS `age`
         FROM `bank`.`user`
         WHERE id = #{id}
     </select>

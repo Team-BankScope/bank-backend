@@ -19,6 +19,7 @@ public class UserEntity implements Serializable {
     private String residentNumber;
     private String password;
     private String userType;
+    private String phone;
     private Gender gender;
     private String age;
     private String grade;

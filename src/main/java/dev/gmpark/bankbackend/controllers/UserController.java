@@ -3,6 +3,7 @@ package dev.gmpark.bankbackend.controllers;
 import dev.gmpark.bankbackend.entities.MemberEntity;
 import dev.gmpark.bankbackend.entities.UserEntity;
 import dev.gmpark.bankbackend.results.CommonResult;
+import dev.gmpark.bankbackend.results.KioskResult;
 import dev.gmpark.bankbackend.services.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -38,10 +39,14 @@ public class UserController {
         response.put("result", result.name());
         return response;
     }
-    @Operation(summary = "비회원(키오스크) 회원가입", description = "주민번호, 이름만 받아 회원을 등록합니다.")
+    @Operation(summary = "비회원(키오스크) 회원가입", description = "주민번호, 이름만을 받아 회원을 등록합니다.")
     @RequestMapping(value = "/semi-register", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
     public Map<String, Object> postUnregisteredUser(@RequestBody UserEntity user) {
-        return null;
+        KioskResult result = this.userService.seminRegister(user);
+        Map<String,Object> response = new HashMap<>();
+        response.put("result",result.name());
+        return response;
     }
 
     @Operation(summary = "멤버 등록", description = "멤버 정보를 받아 등록합니다.")
@@ -84,6 +89,7 @@ public class UserController {
     @RequestMapping(value = "/login", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Map<String, Object> postLogin(@Param(value = "email") String email, @Param(value = "password") String password, @Param(value = "residentNumber") String residentNumber, HttpSession session) {
+
         UserEntity user = this.userService.login(email, password, residentNumber);
         Map<String, Object> response = new HashMap<>();
         if (user != null && "customer".equals(user.getUserType())) {
@@ -102,11 +108,16 @@ public class UserController {
         UserEntity user = this.userService.loginKiosk(residentNumber);
         Map<String, Object> response = new HashMap<>();
         if (user != null) {
-            response.put("result", CommonResult.SUCCESS.name());
-            session.setAttribute("user", user);
+            if ("customer".equals(user.getUserType()) || "unregisterCustomer".equals(user.getUserType())) {
+                response.put("result", CommonResult.SUCCESS.name());
+                session.setAttribute("user", user);
+            } else {
+                response.put("result", "FAILURE_NOT_ALLOWED");
+            }
         } else {
             response.put("result", CommonResult.FAILURE.name());
         }
+
         return response;
     }
     @Operation(summary = "멤버 로그인", description = "이메일, 비밀번호를 받아 멤버 로그인을 합니다.")
