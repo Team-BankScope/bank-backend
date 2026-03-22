@@ -63,7 +63,6 @@ public class AccountController {
         response.put("result", result.name());
         return response;
     }
-
     @Operation(summary = "내 계좌 목록 및 잔액 조회", description = "로그인한 사용자의 계좌 목록과 잔액을 조회합니다.")
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody

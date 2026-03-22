@@ -5,10 +5,9 @@
 <mapper namespace="dev.gmpark.bankbackend.mappers.CardMapper">
 
     <insert id="insertCard" useGeneratedKeys="true" keyColumn="card_id" keyProperty="cardId">
-        INSERT INTO `bank`.`card` (user_id, account_id, card_company,card_name, card_number, card_type, cvc, status, valid_thru, issued_at)
+        INSERT INTO `bank`.`card` (user_id, account_id, card_name, card_number, card_type, cvc, status, valid_thru, issued_at)
         VALUES (#{card.userId},
         #{card.accountId},
-        #{card.cardCompany},
         #{card.cardName},
         #{card.cardNumber},
         #{card.cardType},

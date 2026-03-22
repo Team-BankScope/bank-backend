@@ -15,7 +15,6 @@ public class CardEntity {
     private Long cardId;
     private Integer userId;
     private Long accountId;
-    private String cardCompany;
     private String cardName;
     private String cardNumber;
     private String cardType;

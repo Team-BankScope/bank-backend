@@ -29,14 +29,16 @@ public class CardService {
             return CommonResult.FAILURE;
         }
 
-        // 1. 유저 ID로 계좌 정보 조회하여 accountId 세팅
-        AccountEntity account = accountMapper.selectAccountById(user.getId());
-        if (account == null) {
+        List<AccountEntity> accounts = accountMapper.selectAccountsByUserId(user.getId());
+
+        if (accounts == null || accounts.isEmpty()) {
             return CommonResult.FAILURE; // 연결할 계좌가 없는 경우
         }
 
+        // 보유한 계좌 중 첫 번째 계좌를 선택하여 세팅 (보통 최신 계좌이거나 주거래 계좌)
+        AccountEntity account = accounts.get(0);
+
         card.setUserId(user.getId());
-        card.setCardCompany("우리은행");
         card.setAccountId(account.getAccountId()); // 조회한 accountId 세팅
 
         // 2. 카드 번호, CVC, 유효기간 자동 생성
