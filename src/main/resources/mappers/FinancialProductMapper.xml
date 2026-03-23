@@ -7,7 +7,7 @@
     <!-- 상품 등록 -->
     <insert id="insertProduct" parameterType="FinancialProductEntity"
             useGeneratedKeys="true" keyProperty="product.productId">
-        INSERT INTO financial_product
+        INSERT INTO `bank`.`financial_product`
             (product_category, product_name, base_interest_rate, max_interest_rate,
              min_duration_months, max_duration_months, min_amount, max_amount,
              description, is_active)
@@ -33,7 +33,7 @@
             max_amount          AS maxAmount,
             description,
             is_active           AS isActive
-        FROM financial_product
+        FROM `bank`.`financial_product`
         WHERE is_active = TRUE
         <if test="category != null and category != ''">
             AND product_category = #{category}
@@ -45,7 +45,7 @@
     <!-- 상품 전체 건수 -->
     <select id="countProducts" resultType="int">
         SELECT COUNT(*)
-        FROM financial_product
+        FROM `bank`.`financial_product`
         WHERE is_active = TRUE
         <if test="category != null and category != ''">
             AND product_category = #{category}
@@ -66,30 +66,51 @@
             max_amount          AS maxAmount,
             description,
             is_active           AS isActive
-        FROM financial_product
+        FROM `bank`.`financial_product`
         WHERE product_id = #{productId}
     </select>
 
-    <!-- 상품 정보 수정 -->
+    <!-- 상품 정보 수정 (동적 쿼리 적용: 넘어온 값만 업데이트) -->
     <update id="updateProduct" parameterType="FinancialProductEntity">
-        UPDATE financial_product
-        SET
-            product_category    = #{product.productCategory},
-            product_name        = #{product.productName},
-            base_interest_rate  = #{product.baseInterestRate},
-            max_interest_rate   = #{product.maxInterestRate},
-            min_duration_months = #{product.minDurationMonths},
-            max_duration_months = #{product.maxDurationMonths},
-            min_amount          = #{product.minAmount},
-            max_amount          = #{product.maxAmount},
-            description         = #{product.description},
-            is_active           = #{product.isActive}
+        UPDATE `bank`.`financial_product`
+        <set>
+            <if test="product.productCategory != null">
+                product_category = #{product.productCategory},
+            </if>
+            <if test="product.productName != null and product.productName != ''">
+                product_name = #{product.productName},
+            </if>
+            <if test="product.baseInterestRate != null">
+                base_interest_rate = #{product.baseInterestRate},
+            </if>
+            <if test="product.maxInterestRate != null">
+                max_interest_rate = #{product.maxInterestRate},
+            </if>
+            <if test="product.minDurationMonths != null">
+                min_duration_months = #{product.minDurationMonths},
+            </if>
+            <if test="product.maxDurationMonths != null">
+                max_duration_months = #{product.maxDurationMonths},
+            </if>
+            <if test="product.minAmount != null">
+                min_amount = #{product.minAmount},
+            </if>
+            <if test="product.maxAmount != null">
+                max_amount = #{product.maxAmount},
+            </if>
+            <if test="product.description != null and product.description != ''">
+                description = #{product.description},
+            </if>
+            <if test="product.isActive != null">
+                is_active = #{product.isActive},
+            </if>
+        </set>
         WHERE product_id = #{product.productId}
     </update>
 
     <!-- 상품 비활성화 (소프트 삭제) -->
     <update id="deactivateProduct">
-        UPDATE financial_product
+        UPDATE `bank`.`financial_product`
         SET is_active = FALSE
         WHERE product_id = #{productId}
     </update>
@@ -97,7 +118,7 @@
     <!-- 상담 처리 로그 기록 -->
     <insert id="insertProcessingLog" parameterType="TaskProcessingLogEntity"
             useGeneratedKeys="true" keyProperty="log.logId">
-        INSERT INTO task_processing_log
+        INSERT INTO `bank`.`task_processing_log`
             (task_id, member_id, action_type, processing_note, created_at)
         VALUES
             (#{log.taskId}, #{log.memberId}, #{log.actionType}, #{log.processingNote}, NOW())
@@ -106,7 +127,7 @@
     <!-- 고객 상품 가입 이력 저장 -->
     <insert id="insertSubscription" parameterType="ProductSubscriptionEntity"
             useGeneratedKeys="true" keyProperty="sub.subscriptionId">
-        INSERT INTO product_subscription
+        INSERT INTO `bank`.`product_subscription`
             (user_id, product_id, task_id, amount, duration_months, status, created_at)
         VALUES
             (#{sub.userId}, #{sub.productId}, #{sub.taskId},
