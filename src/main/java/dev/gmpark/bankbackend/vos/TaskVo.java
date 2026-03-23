@@ -28,5 +28,7 @@ public class TaskVo {
     private String level;
     private String userName;
     private String grade;
+    private String age;
+    private String gender;
 
 }

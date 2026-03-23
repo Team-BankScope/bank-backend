@@ -1,11 +1,13 @@
 package dev.gmpark.bankbackend.controllers;
 
 
+import dev.gmpark.bankbackend.entities.TransactionHistoryEntity;
 import dev.gmpark.bankbackend.results.TransactionResult;
 import dev.gmpark.bankbackend.services.TransactionHistoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,8 +34,11 @@ public class TransactionHistoryController {
                                            @RequestParam(value = "description", required = false, defaultValue = "입금") String description,
                                            @RequestParam(value = "taskId", required = false) Long taskId) {
         Map<String, Object> response = new HashMap<>();
-        TransactionResult result = this.transactionHistoryService.deposit(accountNumber, amount, description, taskId);
-        response.put("result", result.name());
+        Pair<TransactionResult, TransactionHistoryEntity> result = this.transactionHistoryService.deposit(accountNumber, amount, description, taskId);
+        response.put("result", result.getLeft().name());
+        if (result.getLeft() == TransactionResult.SUCCESS) {
+            response.put("transaction", result.getRight());
+        }
         return response;
     }
 
@@ -46,8 +51,11 @@ public class TransactionHistoryController {
                                             @RequestParam(value = "description", required = false, defaultValue = "출금") String description,
                                             @RequestParam(value = "taskId", required = false) Long taskId) {
         Map<String, Object> response = new HashMap<>();
-        TransactionResult result = this.transactionHistoryService.withdraw(accountNumber, accountPassword, amount, description, taskId);
-        response.put("result", result.name());
+        Pair<TransactionResult, TransactionHistoryEntity> result = this.transactionHistoryService.withdraw(accountNumber, accountPassword, amount, description, taskId);
+        response.put("result", result.getLeft().name());
+        if (result.getLeft() == TransactionResult.SUCCESS) {
+            response.put("transaction", result.getRight());
+        }
         return response;
     }
 
@@ -61,8 +69,11 @@ public class TransactionHistoryController {
                                             @RequestParam(value = "description", required = false, defaultValue = "이체") String description,
                                             @RequestParam(value = "taskId", required = false) Long taskId) {
         Map<String, Object> response = new HashMap<>();
-        TransactionResult result = this.transactionHistoryService.transfer(fromAccountNumber, accountPassword, toAccountNumber, amount, description, taskId);
-        response.put("result", result != null ? result.name() : "FAILURE");
+        Pair<TransactionResult, TransactionHistoryEntity> result = this.transactionHistoryService.transfer(fromAccountNumber, accountPassword, toAccountNumber, amount, description, taskId);
+        response.put("result", result.getLeft() != null ? result.getLeft().name() : "FAILURE");
+        if (result.getLeft() == TransactionResult.SUCCESS) {
+            response.put("transaction", result.getRight());
+        }
         return response;
     }
 
