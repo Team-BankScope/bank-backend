@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "logId")
-public class TaskProcessionLogEntity {
+public class TaskProcessingLogEntity {
   private Long logId;
   private Long taskId;
   private Integer memberId;
