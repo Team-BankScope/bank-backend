@@ -189,4 +189,6 @@ public class UserController {
         response.put("result", "SUCCESS");
         return response;
     }
+
+    // 키오스크 등록고객 웹사이트가입 api
 }

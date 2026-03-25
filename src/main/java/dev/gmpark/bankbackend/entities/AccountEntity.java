@@ -2,6 +2,7 @@ package dev.gmpark.bankbackend.entities;
 
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -16,6 +17,8 @@ public class AccountEntity {
     private String accountNumber;
     private String accountType;
     private Long balance; // 현재 잔액( 보유금액)
+    private BigDecimal interestRate;
+    private BigDecimal maturityDate;
     private String accountPassword; // 통장 비밀번호
     private String status;         // status(ACTIVE, DORMANT, CLOSED 등)
     private Integer passwordFailCount; // 비밀번호 실패 횟수

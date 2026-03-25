@@ -49,4 +49,6 @@ public class MemberController {
         response.put("result", result.name());
         return response;
     }
+
+
 }

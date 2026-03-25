@@ -17,10 +17,13 @@ public class UserEntity implements Serializable {
     private String name;
     private String email;
     private String residentNumber;
+    private String identificationNumber;
+    private Gender gender;
     private String password;
     private String userType;
     private String phone;
-    private Gender gender;
     private String age;
     private String grade;
+    private String creditStatus;
+
 }

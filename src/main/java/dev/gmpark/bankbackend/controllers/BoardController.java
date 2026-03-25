@@ -102,4 +102,7 @@ public class BoardController {
         }
         return response;
     }
+
+    //새소식 최신순으로 4개 제목과 날짜 받아오는 api필요
+    //이벤트도 마찬가지
 }

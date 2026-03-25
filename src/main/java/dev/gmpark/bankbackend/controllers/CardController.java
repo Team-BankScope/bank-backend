@@ -24,7 +24,7 @@ import java.util.Map;
 public class CardController {
 
     private final CardService cardService;
-
+    // 핀번호 로직 추가
     @Operation(summary = "카드 발급", description = "새로운 카드(체크/신용)를 발급받습니다.")
     @RequestMapping(value = "/", method = RequestMethod.POST, produces =  MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> createCard(@RequestBody CardEntity card, HttpSession session) {

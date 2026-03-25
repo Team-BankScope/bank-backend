@@ -76,5 +76,6 @@ public class TransactionHistoryController {
         }
         return response;
     }
+    // 이체하기 웹사이트용 핀번호로 검증 (간편인증)
 
 }

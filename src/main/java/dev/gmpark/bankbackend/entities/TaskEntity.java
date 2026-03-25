@@ -24,4 +24,6 @@ public class TaskEntity {
     private Integer ranking;             // 💡 int -> Integer (순번이 없을 때 null 허용)
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Boolean isAi;
+
 }
