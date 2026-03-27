@@ -2,7 +2,6 @@ package dev.gmpark.bankbackend.controllers;
 
 
 import dev.gmpark.bankbackend.entities.MemberEntity;
-import dev.gmpark.bankbackend.results.CommonResult;
 import dev.gmpark.bankbackend.results.TaskResult;
 import dev.gmpark.bankbackend.services.TaskService;
 import dev.gmpark.bankbackend.vos.TaskVo;
@@ -49,6 +48,6 @@ public class MemberController {
         response.put("result", result.name());
         return response;
     }
-
+    // 멤버 상태 변경 api
 
 }

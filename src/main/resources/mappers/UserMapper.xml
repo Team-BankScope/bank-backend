@@ -8,13 +8,14 @@
             useGeneratedKeys="true"
             keyColumn="id"
             keyProperty="id">
-        INSERT INTO `bank`.`user` (user_type, name, email, password, resident_number, gender, age)
+        INSERT INTO `bank`.`user` (user_type, name, email, password, resident_number, phone, gender, age)
         VALUES (
                 IFNULL(#{user.userType} , 'customer'),
                 #{user.name},
                 #{user.email},
                 #{user.password},
                 #{user.residentNumber},
+                #{user.phone},
                 #{user.gender},
                 #{user.age})
     </insert>
@@ -37,13 +38,14 @@
                )
     </insert>
     <insert id="insertUnregisteredUser">
-        INSERT INTO `bank`.`user` (user_type, name, email, password, resident_number, gender, age)
+        INSERT INTO `bank`.`user` (user_type, name, email, password, resident_number, phone, gender, age)
         VALUES (
                    IFNULL(#{user.userType} , 'unregisterCustomer'),
                    #{user.name},
                    #{user.email},
                    #{user.password},
                    #{user.residentNumber},
+                   #{user.phone},
                    #{user.gender},
                    #{user.age}
                )
@@ -88,6 +90,7 @@
                `resident_number` AS `residentNumber`,
                `name` AS `name`,
                `user_type` AS `userType`,
+               `phone` AS `phone`,
                `grade` AS `grade`,
                `gender` AS `gender`,
                `age` AS `age`
@@ -104,6 +107,7 @@
                `resident_number` AS `residentNumber`,
                `name` AS `name`,
                `user_type` AS `userType`,
+               `phone` AS `phone`,
                `grade` AS `grade`,
                `gender` AS `gender`,
                `age` AS `age`
@@ -117,6 +121,7 @@
                `resident_number` AS `residentNumber`,
                `name` AS `name`,
                `user_type` AS `userType`,
+               `phone` AS `phone`,
                `grade` AS `grade`,
                `gender` AS `gender`,
                `age` AS `age`
@@ -132,6 +137,7 @@
                `resident_number` AS `residentNumber`,
                `name`            AS `name`,
                `user_type`       AS `userType`,
+               `phone` AS `phone`,
                `grade`           AS `grade`,
                `gender`          AS `gender`,
                `age`             AS `age`
@@ -164,6 +170,7 @@
                `resident_number` AS `residentNumber`,
                `name`            AS `name`,
                `user_type`       AS `userType`,
+               `phone` AS `phone`,
                `grade`           AS `grade`,
                `gender`          AS `gender`,
                `age`             AS `age`

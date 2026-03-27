@@ -102,7 +102,11 @@ public class BoardController {
         }
         return response;
     }
-
-    //새소식 최신순으로 4개 제목과 날짜 받아오는 api필요
+    @RequestMapping(value = "/articles", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public List<BoardEntity> getArticles(@RequestParam(value = "boardType") String boardType) {
+        return this.boardService.getFourArticles(boardType);
+    }
+    //새소식 최신순으로 4개 제목과 작성일자 받아오는 api필요
     //이벤트도 마찬가지
 }

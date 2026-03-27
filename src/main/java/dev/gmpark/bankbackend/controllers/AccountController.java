@@ -32,7 +32,7 @@ public class AccountController {
 
     private final AccountService accountService;
 
-    @Operation(summary = "계좌 등록", description = "손님의 계좌를 등록합니다. (세션,계좌유형, 계좌별칭, 계좌비밀번호)")
+    @Operation(summary = "계좌 등록", description = "손님의 일반 입출금 계좌를 등록합니다. (세션,계좌유형, 계좌별칭, 계좌비밀번호)")
     @RequestMapping(value = "/register", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Map<String, Object> postAccount(HttpSession session, @RequestParam(value = "userId") Integer userId,
@@ -114,6 +114,24 @@ public class AccountController {
         
         return response;
     }
-
     // 예금 적금 컨트롤하는 api
+    @Operation(summary = "예금 개좌 계설", description = "손님의 예금계좌를 개설합니다.")
+    @RequestMapping(value = "/deposit", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Map<String, Object> postDepositAccount() {
+        this.accountService.createDepositAccount();
+        return null;
+    }
+
+    @Operation(summary = "예금 개좌 계설", description = "손님의 적금계좌를 개설합니다.")
+    @RequestMapping(value = "/savings", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Map<String, Object> postSavingsAccount() {
+        this.accountService.createSavingsAccount();
+        return null;
+    }
+
+    // 법인 계좌 개설 api
+
+
 }

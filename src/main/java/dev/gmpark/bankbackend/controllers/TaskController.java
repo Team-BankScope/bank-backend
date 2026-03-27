@@ -59,7 +59,7 @@ public class TaskController {
         }
         return response;
     }
-    @Operation(summary = "현재 대기 시간", description = "평균 대기 시간을 구하여 , 현재 창구 대기 시간을 반환합니다.")
+    @Operation(summary = "평균 대기 시간", description = "평균 대기 시간을 구하여 , 현재 창구 대기 시간을 반환합니다.")
     @RequestMapping(value = "/average-time", method = RequestMethod.GET, produces = MediaType.TEXT_HTML_VALUE)
     @ResponseBody
     public String getAverageTime() {
@@ -78,7 +78,16 @@ public class TaskController {
         return String.valueOf(taskService.getAvailableMemberCount());
     }
 
-
     // 창구토스 api 필요함 memberId바꿔주면됨
     // 멤버 목록 조회 해서 그 멤버 선택시 그사람에게 토스
+    @Operation(summary = "창구 토스", description = "내가 처리할수 없는 업무 창구 토스하기" )
+    @RequestMapping(value = "/toss", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Map<String, Object> tossTask(HttpSession session, @RequestParam(value = "memberId") Integer memberId) {
+        return null;
+    }
+
+    // 오늘 총 처리건수
+
+    //
 }

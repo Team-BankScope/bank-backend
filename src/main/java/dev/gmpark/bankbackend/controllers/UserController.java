@@ -190,5 +190,8 @@ public class UserController {
         return response;
     }
 
-    // 키오스크 등록고객 웹사이트가입 api
+    // unregisterCustomer  웹사이트가입 api
+    // 이메일 인증 api
+    // 기업 회원 처리하는 로직 필요
+
 }
