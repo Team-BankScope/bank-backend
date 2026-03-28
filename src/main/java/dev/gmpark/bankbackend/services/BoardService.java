@@ -106,4 +106,10 @@ public class BoardService {
         
         return Pair.of(pageVo, articles);
     }
+    public List<BoardEntity> getFourArticles(String boardType) {
+        if (boardType == null || (!boardType.equals("notice") && !boardType.equals("event"))) {
+            return null;
+        }
+        return this.boardMapper.selectFourArticlesByBoardType(boardType);
+    }
 }

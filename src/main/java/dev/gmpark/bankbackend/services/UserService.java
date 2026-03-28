@@ -22,8 +22,8 @@ public class UserService {
     private final UserMapper userMapper;
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    public CommonResult register(UserEntity user ) {
-        if( user.getName() == null || user.getEmail() == null || user.getPassword() == null || user.getResidentNumber() == null) {
+    public CommonResult  register(UserEntity user ) {
+        if( user.getName() == null || user.getEmail() == null || user.getPassword() == null || user.getResidentNumber() == null || user.getPhone() == null) {
             return CommonResult.FAILURE;
         }
 

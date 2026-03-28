@@ -91,4 +91,10 @@ public class AccountService {
     public AccountEntity getAccountByAccountNumber(String accountNumber) {
         return this.accountMapper.selectAccountByAccountNumber(accountNumber);
     }
+    public Pair<AccountResult, AccountEntity> createDepositAccount() {
+        return Pair.of(AccountResult.FAILURE, null);
+    }
+    public Pair<AccountResult, AccountEntity> createSavingsAccount() {
+        return Pair.of(AccountResult.FAILURE, null);
+    }
 }

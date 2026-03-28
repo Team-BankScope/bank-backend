@@ -18,4 +18,5 @@ public interface BoardMapper {
     List<BoardEntity> selectArticlesByBoardType(@Param("boardType") String boardType, 
                                                 @Param("limit") int limit, 
                                                 @Param("offset") int offset);
+    List<BoardEntity> selectFourArticlesByBoardType(@Param("boardType") String boardType);
 }
