@@ -27,7 +27,7 @@ public class SmsController {
         if (phone == null || phone.isEmpty()) {
             return Map.of("result", "FAILURE");
         }
-        if ( user.getPhone().equals(phone)) {
+        if ( !user.getPhone().equals(phone)) {
             return Map.of("result", "FAILURE_NOT_SAME_PHONE");
         }
         try {
