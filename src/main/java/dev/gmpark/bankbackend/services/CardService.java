@@ -99,4 +99,23 @@ public class CardService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yy");
         return expiryDate.format(formatter);
     }
+
+    // 행원용 카드 발급 (워크스페이스용)
+    public CommonResult createCardByMember(CardEntity card) {
+        // 행원이 프론트엔드에서 고객의 userId, 연결할 accountId, cardType을 반드시 넘겨주어야 함
+        if (card.getUserId() == null || card.getAccountId() == null || card.getCardType() == null) {
+            return CommonResult.FAILURE;
+        }
+
+        // 고객용과 동일하게 카드 번호, CVC, 유효기간 자동 생성
+        card.setCardNumber(generateCardNumber());
+        card.setCvc(generateCvc());
+        card.setValidThru(generateValidThru());
+        card.setStatus("ACTIVE");
+        card.setIssuedAt(LocalDateTime.now());
+
+        // 매퍼를 통해 DB insert
+        int result = this.cardMapper.insertCard(card);
+        return result > 0 ? CommonResult.SUCCESS : CommonResult.FAILURE;
+    }
 }

@@ -117,7 +117,85 @@ public class CardController {
     // 웹사이트쪽
     // 워크스페이스 용 카드 개설및 해지용 필요함
 
+    // -----------------------------------------------------------------
+    // [워크스페이스] 행원 전용 API
+    // -----------------------------------------------------------------
+    @Operation(summary = "카드 발급 (행원용)", description = "행원 워크스페이스에서 고객을 대신하여 카드를 발급합니다. (userId, accountId, cardType 필수)")
+    @PostMapping(value = "/workspace", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Object> createCardByWorkspace(CardEntity card, HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
 
+        // 1. 행원 세션 확인 (고객 세션인 'user'가 아니라 'member'를 검사)
+        if (session.getAttribute("member") == null) {
+            response.put("result", "FAILURE_SESSION");
+            return response;
+        }
+
+        // 2. 서비스 로직 호출 (행원용 발급 메서드)
+        CommonResult result = this.cardService.createCardByMember(card);
+        response.put("result", result.name());
+
+        return response;
+    }
+
+    @Operation(summary = "고객 카드 목록 조회 (행원용)", description = "행원이 특정 고객(userId)의 카드 목록을 조회합니다.")
+    @GetMapping(value = "/workspace/list", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Object> getWorkspaceCards(@RequestParam("userId") Integer targetUserId, HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+
+        // 1. 행원 권한 검사
+        if (session.getAttribute("member") == null) {
+            response.put("result", "FAILURE_SESSION");
+            return response;
+        }
+
+        List<CardEntity> cards = this.cardService.getCardsByUserId(targetUserId);
+        response.put("result", CommonResult.SUCCESS.name());
+        response.put("cards", cards);
+
+        return response;
+    }
+
+    @Operation(summary = "고객 카드 상태 변경 (행원용)", description = "행원이 특정 고객의 카드 상태를 변경합니다 (분실, 정지 등).")
+    @PatchMapping(value = "/workspace/{cardId}/status", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Object> updateWorkspaceCardStatus(
+            @PathVariable("cardId") Long cardId,
+            @RequestParam("status") String status,
+            @RequestParam("userId") Integer targetUserId,
+            HttpSession session) {
+
+        Map<String, Object> response = new HashMap<>();
+
+        if (session.getAttribute("member") == null) {
+            response.put("result", "FAILURE_SESSION");
+            return response;
+        }
+
+        CommonResult result = this.cardService.updateCardStatus(cardId, status, targetUserId);
+        response.put("result", result.name());
+
+        return response;
+    }
+
+    @Operation(summary = "고객 카드 해지/삭제 (행원용)", description = "행원이 특정 고객의 카드를 해지(삭제)합니다.")
+    @DeleteMapping(value = "/workspace/{cardId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Object> deleteWorkspaceCard(
+            @PathVariable("cardId") Long cardId,
+            @RequestParam("userId") Integer targetUserId,
+            HttpSession session) {
+
+        Map<String, Object> response = new HashMap<>();
+
+        if (session.getAttribute("member") == null) {
+            response.put("result", "FAILURE_SESSION");
+            return response;
+        }
+
+        CommonResult result = this.cardService.deleteCard(cardId, targetUserId);
+        response.put("result", result.name());
+
+        return response;
+    }
 
 
 
